@@ -1,9 +1,11 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <inttypes.h>
+#include <fftw3.h>
 
 #define FREQ 8000	// Hz
 #define WINDOW 50	// ms
+
+void dump_buffer(void *, size_t);
 
 int main(int argc, char *argv[]) {
 	FILE *fp;
@@ -39,11 +41,16 @@ int main(int argc, char *argv[]) {
 	
 	index = buf;
 
-	size_t i = 0;
-	for(i; i < num; i++) {
-		printf("%hd ", *index++);	
-	}
+	dump_buffer(buf, num);
 	
 	free(buf);
 	return 0;
+}
+
+void dump_buffer(void *buf, size_t size) {
+	short int *index = buf;
+	size_t i = 0;
+	for(i; i< size; i++) {
+		printf("%hd ", *index++);
+	}		
 }
