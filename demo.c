@@ -17,8 +17,7 @@ int main(int argc, char *argv[]) {
 	short int *index;
 	size_t num;
 
-	double *in;
-	fftw_complex *out;
+	double *in, *out;
 	fftw_plan p;
 
 	fp = fopen(argv[1], "r");
@@ -51,14 +50,14 @@ int main(int argc, char *argv[]) {
 	//dump_buffer(buf, num);
 
 	in  = (double *) fftw_malloc(sizeof(double)*N);
-	out = (fftw_complex *) fftw_malloc(sizeof(fftw_complex)*N);
+	out = (double *) fftw_malloc(sizeof(double)*N);
 	int i = 0;
 	for(i; i<N; i++) {
 		in[i] = *index++;
 		//printf("%lf\n", in[i]);
 	}
 	//dump_double_buffer(in, N);
-	p = fftw_plan_dft_r2c_1d(N, in, out, FFTW_ESTIMATE);
+	p = fftw_plan_r2r_1d(N, in, out, FFTW_R2HC, FFTW_ESTIMATE);
 	fftw_execute(p);
 
 	dump_double_buffer(out, N);
