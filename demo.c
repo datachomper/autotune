@@ -5,7 +5,7 @@
 
 #define FREQ 8000	// Hz
 #define WINDOW 50	// ms
-#define N 1000		// # samples
+#define N 200		// # samples
 
 void dump_buffer(void *, size_t);
 void dump_double_buffer(void *, size_t);
@@ -51,6 +51,7 @@ int main(int argc, char *argv[]) {
 
 	in  = (double *) fftw_malloc(sizeof(double)*N);
 	out = (double *) fftw_malloc(sizeof(double)*N);
+
 	int i = 0;
 	for(i; i<N; i++) {
 		in[i] = *index++;
@@ -60,6 +61,10 @@ int main(int argc, char *argv[]) {
 	p = fftw_plan_r2r_1d(N, in, out, FFTW_R2HC, FFTW_ESTIMATE);
 	fftw_execute(p);
 
+	// Calculate frequency vector
+	for(i=0; i<N; i++) {
+		out[i] = out[i]*FREQ/N;
+	}
 	dump_double_buffer(out, N);
 		
 	// Cleanup
@@ -82,6 +87,8 @@ void dump_double_buffer(void *buf, size_t size) {
 	double *index = buf;
 	size_t i = 0;
 	for(i; i< size; i++) {
-		printf("%lf\n", (double) *index++);
+		//printf("%lf\n", (double) *index++);
+		printf("[%dHz]\t%1.7f\n", (int)(i/0.025), creal(*index));
+		index++;
 	}		
 }
