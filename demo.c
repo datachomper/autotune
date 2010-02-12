@@ -3,9 +3,9 @@
 #include <complex.h>
 #include <fftw3.h>
 
-#define FREQ 8000	// Hz
+#define FREQ 8000.0	// Hz
 #define WINDOW 50	// ms
-#define N 200		// # samples
+#define N 512		// # samples
 
 void dump_buffer(void *, size_t);
 void dump_double_buffer(void *, size_t);
