@@ -6,7 +6,7 @@
 struct note {
 	double freq[OCTAVES_PER_SCALE];	// The frequency of the note, index is the octave
 	const char *desc;		// Description of note
-	char octave;			// Stores a referenced octave
+	short octave;			// Stores a referenced octave
 };
 
 struct scale {
@@ -46,11 +46,12 @@ struct note *freq2note(double freq) {
 				} else {
 					up = cmaj.n[j]->freq[i] - freq;
 					down = freq - cmaj.n[j-1]->freq[i];
-					cmaj.n[j]->octave = i;
 
 					if(up < down) {
+						cmaj.n[j]->octave = i;
 						return cmaj.n[j];
 					}
+					cmaj.n[j-1]->octave = i;
 					return cmaj.n[j-1];
 				}
 			} else {

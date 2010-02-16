@@ -14,23 +14,27 @@ void dump_half_complex(void *buf, size_t size);
 void print_freq(void *buf, size_t size);
 
 int main(int argc, char *argv[]) {
-	FILE *fp;
+	FILE *fp, *fpout;
 	void *buf;
+	short int *synth;
 	unsigned long flen;
 	short int *index;
 	size_t num;
 
 	double *in, *out;
-	fftw_plan p;
+	fftw_plan forward, reverse;
 
 	fp = fopen(argv[1], "r");
+	fpout = fopen(argv[2], "w");
 
 	if(!fp) {
 		fprintf(stderr, "Can't open file %s\n", argv[1]);
 		return 0;
 	}
-
-	printf("Frequency of C0 is %1.2f\n", C.freq[0]);
+	if(!fpout) {
+		fprintf(stderr, "Can't open fil %s\n", argv[2]);
+		return 0;
+	}
 
 	// Get file length
 	fseek(fp, 0, SEEK_END);
@@ -44,6 +48,12 @@ int main(int argc, char *argv[]) {
 		fclose(fp);
 		return 0;
 	}
+	synth = malloc(N*2);
+	if(!synth) {
+		fprintf(stderr, "Unable to allocate %d bytes", N*2);
+		fclose(fp);
+		return 0;
+	}
 
 	// Fill buffer
 	num = fread(buf, 2, flen, fp);
@@ -52,11 +62,10 @@ int main(int argc, char *argv[]) {
 	
 	index = buf;
 
-	//dump_buffer(buf, num);
-
 	in  = (double *) fftw_malloc(sizeof(double)*N);
 	out = (double *) fftw_malloc(sizeof(double)*N);
-	p = fftw_plan_r2r_1d(N, in, out, FFTW_R2HC, FFTW_ESTIMATE);
+	forward = fftw_plan_r2r_1d(N, in, out, FFTW_R2HC, FFTW_ESTIMATE);
+	reverse = fftw_plan_r2r_1d(N, out, in, FFTW_HC2R, FFTW_ESTIMATE);
 
 	int i,j,y;
 	for(i=0, j=0; i<num; i++, j++) {
@@ -69,24 +78,32 @@ int main(int argc, char *argv[]) {
 		in[j] = index[i];
 		//printf("%lf\n", in[j]);
 
-		//dump_double_buffer(in, N);
 		if(j == N) {
+			j=0;
 			printf("sample %d\n", i);
-			fftw_execute(p);
+			fftw_execute(forward);
 			// Normalize output
 			for(y=0; y<N; y++) {
-				out[y] = out[y]/(2*N);
+				out[y] = out[y]/(N);
 			}
-			//dump_double_buffer(out, N);
-			//dump_half_complex(out, N);
 			print_freq(out, N);
-			j=0;
+
+			// Synthesize back to real audio
+			fftw_execute(reverse);
+			for(y=0; y<N; y++) {
+				//synth[y] = (short int)(in[y]/(2*N));
+				synth[y] = (short int)in[y];
+			}
+			//dump_buffer(synth, N);
+			fwrite(synth, 2, N, fpout);
 		}
 	
 	}
 		
 	// Cleanup
-	fftw_destroy_plan(p);
+	fclose(fpout);
+	fftw_destroy_plan(forward);
+	fftw_destroy_plan(reverse);
 	fftw_free(in);
 	fftw_free(out);
 	free(buf);
