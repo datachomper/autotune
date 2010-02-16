@@ -1,4 +1,4 @@
 auto:
-	cc demo.c -o demo -lfftw3 -lm
+	cc demo.c -o demo -lfftw3 -lm -Wall
 debug:
-	cc demo.c -o demo -lfftw3 -lm -ggdb
+	cc demo.c -o demo -lfftw3 -lm -Wall -ggdb
