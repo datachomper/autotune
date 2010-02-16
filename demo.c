@@ -27,7 +27,7 @@ int main(int argc, char *argv[]) {
 
 	if(!fp) {
 		fprintf(stderr, "Can't open file %s\n", argv[1]);
-		return;
+		return 0;
 	}
 
 	printf("Frequency of C0 is %1.2f\n", C.freq[0]);
@@ -42,7 +42,7 @@ int main(int argc, char *argv[]) {
 	if(!buf) {
 		fprintf(stderr, "Unable to allocate %ld bytes", flen);
 		fclose(fp);
-		return;
+		return 0;
 	}
 
 	// Fill buffer
@@ -96,7 +96,7 @@ int main(int argc, char *argv[]) {
 void dump_buffer(void *buf, size_t size) {
 	short int *index = buf;
 	size_t i = 0;
-	for(i; i< size; i++) {
+	for(; i<size; i++) {
 		printf("%hd ", *index++);
 	}		
 }
@@ -104,7 +104,7 @@ void dump_buffer(void *buf, size_t size) {
 void dump_double_buffer(void *buf, size_t size) {
 	double *index = buf;
 	size_t i = 0;
-	for(i; i< size; i++) {
+	for(; i< size; i++) {
 		//printf("%lf\n", (double) *index++);
 		printf("[%dHz]\t%1.7f\n", (int)(i/(N/FREQ)), index[i]);
 	}		
@@ -114,7 +114,7 @@ void dump_half_complex(void *buf, size_t size) {
 	double *index = buf;
 	double x;
 	size_t n = 1;
-	for(n; n<size/2; n++) {
+	for(; n<size/2; n++) {
 		x = sqrt(index[n]*index[n] + index[size - n]*index[size -n]);
 		//printf("[%dHz]\t\t(%1.5f %1.5f)\t%1.5f\n", (int)(n/(N/FREQ)), index[n], index[size-n], x);
 		printf("%d,%1.2f\n", (int)(n/(N/FREQ)), x);
@@ -129,7 +129,7 @@ void print_freq(void *buf, size_t size) {
 	struct note *note;
 	//struct scale *cmaj = &CMajor;
 
-	for(n; n<size/2; n++) {
+	for(; n<size/2; n++) {
 		x[n] = sqrt(index[n]*index[n] + index[size - n]*index[size -n]);
 		if(x[n] > x[max]) {
 			max = n;

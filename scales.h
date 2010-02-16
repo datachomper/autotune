@@ -57,5 +57,6 @@ struct note *freq2note(double freq) {
 				//printf("i%d j%d %f\n", i, j, cmaj.n[j]->freq[i]);
 			}
 		}	
-	}	
+	}
+	return 0;
 }
