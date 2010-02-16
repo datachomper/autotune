@@ -126,8 +126,8 @@ void print_freq(void *buf, size_t size) {
 	double x[size];
 	size_t n = 1;
 	size_t max = 1;
-	//note note;
-	//scale *cmaj = &CMajor;
+	struct note *note;
+	//struct scale *cmaj = &CMajor;
 
 	for(n; n<size/2; n++) {
 		x[n] = sqrt(index[n]*index[n] + index[size - n]*index[size -n]);
@@ -135,8 +135,8 @@ void print_freq(void *buf, size_t size) {
 			max = n;
 		}
 	}
-	//note = freq2note(max/(N/FREQ));
-//	printf("Detected frequency %d(%1.2f); Closest note %s\n",
-//				(int)(max/(N/FREQ)), x[max],
-//				note.desc);
+	note = freq2note(max/(N/FREQ));
+	printf("Detected frequency %d(%1.2f); Closest note %s; Octave: %d\n",
+				(int)(max/(N/FREQ)), x[max],
+				note->desc, (int)note->octave);
 }
