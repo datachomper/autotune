@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <fftw3.h>
 #include <math.h>
+#include "scales.h"
 
 #define FREQ 8000.0	// Hz
 #define WINDOW 50	// ms
@@ -28,6 +29,8 @@ int main(int argc, char *argv[]) {
 		fprintf(stderr, "Can't open file %s\n", argv[1]);
 		return;
 	}
+
+	printf("Frequency of C0 is %1.2f\n", C.freq[0]);
 
 	// Get file length
 	fseek(fp, 0, SEEK_END);
@@ -123,6 +126,8 @@ void print_freq(void *buf, size_t size) {
 	double x[size];
 	size_t n = 1;
 	size_t max = 1;
+	//note note;
+	//scale *cmaj = &CMajor;
 
 	for(n; n<size/2; n++) {
 		x[n] = sqrt(index[n]*index[n] + index[size - n]*index[size -n]);
@@ -130,8 +135,8 @@ void print_freq(void *buf, size_t size) {
 			max = n;
 		}
 	}
-	printf("Detected frequency %d(%1.2f) \t %d(%1.2f) \t %d(%1.2f)\n",
-				(int)((max-1)/(N/FREQ)), x[max-1],
-				(int)(max/(N/FREQ)), x[max],
-				(int)((max+1)/(N/FREQ)), x[max+1]);
+	//note = freq2note(max/(N/FREQ));
+//	printf("Detected frequency %d(%1.2f); Closest note %s\n",
+//				(int)(max/(N/FREQ)), x[max],
+//				note.desc);
 }
